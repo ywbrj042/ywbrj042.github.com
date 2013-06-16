@@ -9,8 +9,8 @@
   <meta name="author" content="杨武兵">
 
   
-  <meta name="description" content=" Blog Archive 2013 模拟练车总结
-Jun 16 2013 Recent Posts 模拟练车总结 ">
+  <meta name="description" content="Blog Archive 2013 模拟练车总结
+Jun 16 2013 Categories Recent Posts 模拟练车总结 GitHub Repos Status updating... @ywbrj042 on GitHub $(document).ready(function &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,6 +97,11 @@ Jun 16 2013 Recent Posts 模拟练车总结 ">
 <aside class="sidebar">
   
     <section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    
+  </ul>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -105,6 +110,35 @@ Jun 16 2013 Recent Posts 模拟练车总结 ">
       </li>
     
   </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/ywbrj042">@ywbrj042</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'ywbrj042',
+            count: 1,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
 
 
