@@ -3,7 +3,7 @@ layout: post
 title: "模拟练车总结"
 date: 2013-06-16 10:52
 comments: true
-categories: 
+categories: life
 ---
 今天练了一下午，以前不太明白的地方都明白了。特记录下来以备忘。
 # 1.发动车辆 #
