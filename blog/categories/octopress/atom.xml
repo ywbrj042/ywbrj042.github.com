@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: octopress | 杨武兵个人博客]]></title>
+  <link href="http://ywbrj042.github.io/blog/categories/octopress/atom.xml" rel="self"/>
+  <link href="http://ywbrj042.github.io/"/>
+  <updated>2013-06-18T22:23:56+08:00</updated>
+  <id>http://ywbrj042.github.io/</id>
+  <author>
+    <name><![CDATA[杨武兵]]></name>
+    <email><![CDATA[ywbrj042@qq.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[octopress安装总结]]></title>
+    <link href="http://ywbrj042.github.io/blog/2013/06/18/octopress-install/"/>
+    <updated>2013-06-18T08:54:00+08:00</updated>
+    <id>http://ywbrj042.github.io/blog/2013/06/18/octopress-install</id>
+    <content type="html"><![CDATA[<h1>前言</h1>
+
+<p>最近学习了github的使用，开始想折腾自己的个人博客，通过在网上查找资料，最终发现octopress比较符合我的需求，博客的风格清爽，而且还具有响应式设计效果，在移动端阅读十分方便。</p>
+
+<h1>安装</h1>
+
+<p>安装步骤参考octopress官网的文档说明，见地址：<a href="http://octopress.org/docs/setup/" title="octopress安装步骤">http://octopress.org/docs/setup/</a></p>
+
+<p>经过我的实践证明，在安装的时候由于某些环境发生变化或者步骤省略，可能会发生一些错误。</p>
+
+<ol>
+<li>执行bundle install错误。由于未安装DevKit而无法满足依赖，请去网址<a href="http://rubyinstaller.org/add-ons/devkit/" title="http://rubyinstaller.org/add-ons/devkit/">http://rubyinstaller.org/add-ons/devkit/</a>下载DevKit，先安装该组件。</li>
+<li>注意版本问题。如果下载的版本与文档说明的不一致，可能会安装完毕后运行不正常。文档时针对某个版本编写的，推荐使用如下版本。</li>
+</ol>
+
+
+<p>Ruby 1.9.3-p429  DevKit-4.5.2</p>
+
+<h1>部署到github</h1>
+
+<p>网站部署在octopress官网上也有文档说明，见地址：<a href="http://octopress.org/docs/deploying/github/" title="http://octopress.org/docs/deploying/github/">http://octopress.org/docs/deploying/github/</a> 但是在安装文档操作的时候会碰到问题，特记录下来。</p>
+
+<p><strong>注意：</strong> 会碰到无权限访问的问题。当执行如下命令：</p>
+
+<p>rake setup_github_pages</p>
+
+<p>会出现提示语句：</p>
+
+<p>Enter the read/write url for your repository</p>
+
+<p>(For example, &lsquo;git@github.com:your_username/your_username.github.io)</p>
+
+<p>Repository url:</p>
+
+<p>由于github网站发生变化，url地址不对，如果按照提示语句设置，则会再提交的时候报错。建议直接拷贝github网站上的ssh url地址，比如目前github地址是这样的格式，比如我的用户名是ywbrj042，则完整的地址如下所示：</p>
+
+<p>git@github.com:ywbrj042/ywbrj042.github.com.git</p>
+]]></content>
+  </entry>
+  
+</feed>
