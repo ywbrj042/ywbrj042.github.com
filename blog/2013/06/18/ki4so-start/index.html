@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>关于我 - 杨武兵个人博客</title>
+  <title>ki4so-发起一个史上最开源的sso项目 - 杨武兵个人博客</title>
   <meta name="author" content="杨武兵">
 
   
-  <meta name="description" content="关于我 2013-06-17 杨武兵 关注和持续研究以下几个领域： 1.互联网大数据、高并发、高性能及分布式系统设计和开发。 2.敏捷项目开发。 3.技术团队建设。 2013-06-17 Tweet 友情链接 韩军星 闲敲棋子 关于我 互联网架构师，技术管理者，技术文化倡导者，敏捷开发狂热者 &hellip;">
+  <meta name="description" content="最近一直在研究单点登录，研究了比较流行的开源单点登录系统——CAS，对其做了比较深入的研究，深入学习了其原理和源代码。对其有一个比较深入的认识，我们公司也是一直在用它实现单点登录，在用的过程中觉得CAS存在以下方面不太适合我们的地方。 为什么要开发自己的SSO? 重量级。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://ywbrj042.github.io/about">
+  <link rel="canonical" href="http://ywbrj042.github.io/blog/2013/06/18/ki4so-start">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="杨武兵个人博客" type="application/atom+xml">
@@ -65,40 +65,15 @@
   <div id="main">
     <div id="content">
       <div>
-<article role="article">
+<article class="hentry" role="article">
   
   <header>
-    <h1 class="entry-title">关于我</h1>
-    <p class="meta">
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-06-17T22:53:00+08:00" pubdate data-updated="true">2013-06-17</time></p>
-  </header>
-  
-  <p>杨武兵</p>
-
-<p>关注和持续研究以下几个领域：</p>
-
-<p>1.互联网大数据、高并发、高性能及分布式系统设计和开发。</p>
-
-<p>2.敏捷项目开发。</p>
-
-<p>3.技术团队建设。</p>
-
-  
-    <footer>
+    
+      <h1 class="entry-title">Ki4so-发起一个史上最开源的sso项目</h1>
+    
+    
       <p class="meta">
         
-        
 
 
 
@@ -110,21 +85,107 @@
   
 
 
-<time datetime="2013-06-17T22:53:00+08:00" pubdate data-updated="true">2013-06-17</time>
+<time datetime="2013-06-18T20:55:00+08:00" pubdate data-updated="true">2013-06-18</time>
         
       </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>最近一直在研究单点登录，研究了比较流行的开源单点登录系统——CAS，对其做了比较深入的研究，深入学习了其原理和源代码。对其有一个比较深入的认识，我们公司也是一直在用它实现单点登录，在用的过程中觉得CAS存在以下方面不太适合我们的地方。</p>
+
+<h1>为什么要开发自己的SSO?</h1>
+
+<ol>
+<li>重量级。CAS作为一个开源的通用的SSO系统，要考虑的东西太多，要遵循的协议也太多，因此在CAS里面有很多其实你根本用不着的概念和特性，所以会导致相对比较笨重一些。</li>
+<li>有状态。CAS存在着TGT、ST等票据信息，这些信息是用户登录的状态，有了状态之后，不利于集群扩展，降低了整体系统的可伸缩性，当然它也有它的集群方案，是可以实现的。但是如果减少这些状态，将状态分散到客户端，不仅减轻了服务器的压力，而且服务器可以更方便的伸缩，更适合大型互联网应用的场景。
+因此我们打算重新开发一个自主的单点登录系统，它在设计理念上能够避免上述两点问题，下面是我们这个项目的介绍。
+
+<h1>项目介绍</h1></li>
+</ol>
+
+
+<p>  ki4so是一个简约、无状态、易扩展、易伸缩的适合于大型互联网web应用场景的单点登录系统，它功能简单，只实现了统一登录和登出，它最大的特色是将用户状态写入到cookie中，最大程度减少了单点登录服务端的状态，服务端只需要存储公共的应用密钥，将用户凭证的认证分散到各应用服务中，最大程度减轻了ki4so服务器的压力。</p>
+
+<h1>为什么要用ki4so？</h1>
+
+<p>单点登录系统有很多，开源的成熟的产品也有很多，比如耶鲁大学的cas等。</p>
+
+<ol>
+<li>无状态。系统可伸缩性好。</li>
+<li>简单轻量级。</li>
+<li>性能高。</li>
+<li><p>安全性高。</p>
+
+<h1>加入我们这个项目有什么好处？</h1></li>
+<li><p>我们的项目是最开源的。我们从有了一个想法之后，就开始彻底开源了，我们将概要设计、详细设计和所有文档都彻底开源，我们不一定是一个最好的项目，但一定是最开源的项目，我们毫无保留，将所有的思想、经验和项目成果彻底与所有人分享。</p></li>
+<li>我们的项目刚开始，你可以最大程度的学习到更多东西。我们项目目前刚刚启动，正处于项目的概要和详细设计阶段，你可以一起参与项目的策划和设计，你不仅仅是学习源代码，还可以自己编写出色的源代码，这远比仅仅学习下CAS要学到的东西多得多。</li>
+<li>sso是几乎每个公司都要用的，你可以将ki4so应用到你们公司中。ki4so做的事情很简单，就是统一登录和登出，几乎能与任何公司的、任何平台开发的、任何业务领域的web应用进行整合。你可以让ki4so更好地位你所在的公司服务。</li>
+<li>你可以为开源做贡献，你在做一件伟大的事情。你可以为ki4so写扩展、写各种语言的客户端、与更多的东西进行集成并贡献出来，为别人服务，这是一件非常伟大的事情。
+
+<h1>联系我们</h1></li>
+</ol>
+
+
+<h2>项目主页：</h2>
+
+<p> 我们的项目主页在：<a href="https://github.com/ebnew/ki4so" title="https://github.com/ebnew/ki4so">https://github.com/ebnew/ki4so</a> 这里有更详细的项目介绍。</p>
+
+<h2>项目群：</h2>
+
+<p><strong>199315835</strong> 项目的核心团队成员都在里面，你可以加入该群，一群探讨，你可以说说你的想法，提提你的意见，或者参与项目，总之非常欢迎大家一起。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
       
-        <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ywbrj042.github.io/about/index.html" data-via="" data-counturl="http://ywbrj042.github.io/about/index.html" >Tweet</a>
+
+<span class="byline author vcard">Posted by <span class="fn">杨武兵</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T20:55:00+08:00" pubdate data-updated="true">2013-06-18</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ki4so/'>ki4so</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://ywbrj042.github.io/blog/2013/06/18/ki4so-start/" data-via="" data-counturl="http://ywbrj042.github.io/blog/2013/06/18/ki4so-start/" >Tweet</a>
   
   
   
 </div>
 
+    
+    <p class="meta">
       
-    </footer>
-  
+        <a class="basic-alignment left" href="/blog/2013/06/18/octopress-install/" title="Previous Post: octopress安装总结">&laquo; octopress安装总结</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/06/18/cobar-trial/" title="Next Post: cobar试用记录">cobar试用记录 &raquo;</a>
+      
+    </p>
+  </footer>
 </article>
 
 </div>
