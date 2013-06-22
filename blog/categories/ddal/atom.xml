@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: tdal | 杨武兵个人博客]]></title>
-  <link href="http://ywbrj042.github.io/blog/categories/tdal/atom.xml" rel="self"/>
+  <title><![CDATA[Category: ddal | 杨武兵个人博客]]></title>
+  <link href="http://ywbrj042.github.io/blog/categories/ddal/atom.xml" rel="self"/>
   <link href="http://ywbrj042.github.io/"/>
-  <updated>2013-06-18T22:23:56+08:00</updated>
+  <updated>2013-06-22T16:42:52+08:00</updated>
   <id>http://ywbrj042.github.io/</id>
   <author>
     <name><![CDATA[杨武兵]]></name>
@@ -12,6 +12,72 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[分布式数据访问层技术方案选型]]></title>
+    <link href="http://ywbrj042.github.io/blog/2013/06/21/ddal-tec/"/>
+    <updated>2013-06-21T15:43:00+08:00</updated>
+    <id>http://ywbrj042.github.io/blog/2013/06/21/ddal-tec</id>
+    <content type="html"><![CDATA[<h1>解决的问题</h1>
+
+<p>目前已经面临或者未来可能面临的问题有以下这些：</p>
+
+<p>1.数据量越来越大，超出了单表或者单库的最大限制。</p>
+
+<p>2.数据访问压力越来越大，超出了数据库系统能力。</p>
+
+<p>3.数据访问层运维问题。</p>
+
+<p>4.数据访问层高可用方案。</p>
+
+<p>5.数据访问层访问控制和管理。</p>
+
+<p>暂时不解决的问题包括：</p>
+
+<p>对非关系型数据存储的统一访问。</p>
+
+<h1>自主开发还是扩展？</h1>
+
+<p>为了解决上述问题，有很多可选的方案。自主开发和使用现有开源方案扩展的讨论是经常会面临的，详细讨论过程就不再赘述，直接列出讨论的结果。</p>
+
+<p>结论：基于目前开源方案进行扩展和定制实现。具体原因有以下这些：</p>
+
+<p>a.我们的使用场景很简单，大多数开源解决方案都可以很好地实现，而且目前有很多可选的开源方案，直接使用开源方案可行。</p>
+
+<p>b.完全自主开发的周期更长、技术风险都非常大，这都是咱们无法承担的。</p>
+
+<p>c.选择一个源代码开放、需求最符合、代码能够扩展和定制的开源产品可行。基于该开源产品，通过</p>
+
+<p>不断深入学习使用方法，学习实现原理和源代码实现，达到可以自由扩展和定制，以改造成完全符合</p>
+
+<p>自身需求的产品。</p>
+
+<h1>技术方案选型</h1>
+
+<p>可选方案分类概述
+对于ddal来说，最核心的一个需求莫过于分库分表，而对于分库分表，已经有很多的开源产品出现了，比如cobar-client、hibernate shards、guzz、halo-dal、ibatis-sharding、cobar、mysql proxy、tddl等。每一个产品都有针对于不同层面进行封装而达到屏蔽上层对底层分库分表的具体细节的依赖，都是加载数据库访问客户端和服务端之间的一些中间层。</p>
+
+<p>总结一下上述列出的各种解决方案可以归纳为一下几大类。</p>
+
+<p>1.DAO层。该方案即通过在实现DAO层代码时候，通过硬编码的方式加入分库分表的逻辑，该层实现一般由项目组自行根据需求实现。</p>
+
+<p>2.ORM 框架层。该方案的实现是通过实现一个ORM框架，该框架自带分库分表功能，如：guzz；另外一种方式是基于开源成熟的ORM框架（比如MyBaits、HIbernate）进行扩展分库分表特性，主要的开源产品有：cobar-client、hibernate shard、shalo-dal、ibatis-sharding。</p>
+
+<p>3.JDBC API层。该方案通过封装JDBC API，实现分库分表逻辑，这个方法比较直接，而且有比较强的可控制性，目前还没有发现成熟的开源产品可用。</p>
+
+<p>4.数据访问代理层。该方案通过位于客户端和服务端中间的代理服务器实现分库分表逻辑，主要产品有mysql proxy、Cobar和amoeba等。</p>
+
+<p>5.数据库分区。该方案是数据库自行实行的分库分表特性。目前主流的关系型数据库，商业数据库Oralce、SQL server和DB2早就有非常成熟的数据库分区解决方案，而主流的开源数据库MySQL和PostGre也在5.0和8.0版本也增加了数据库表分区的特性。</p>
+
+<p>如上图所示，展示的是各种方案之间的关系，还包括了各种方案所处的层次，图中带颜色的各区块表示的是各种实现方案。</p>
+
+<p>上图中的关系是越处于下方的层次越低，上层的总是依赖下层，下层不依赖上层。各种层次的实现方案都有自己的优缺点，有自己适合的场景。</p>
+
+<h1>可选方案对比分析</h1>
+
+<p>各种可选方案都能够从不能程度上实现分库分表的核心需求，每种方案都有自己的优势和适合的应用场景，同时也有它的缺点和使用上的限制，通过对各种方案的详细各种因素的综合对比分析才能选择一个最适合一种或者多种方案的组合。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[cobar试用记录]]></title>
@@ -46,10 +112,15 @@
 
 <h1>3.功能概述</h1>
 
-Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。
-<img src="http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&amp;modificationDate=1341458291000" alt="" />
+<p>Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。</p></li>
+</ul>
 
-<h2>3.1 Cobar解决的问题</h2></li>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&amp;modificationDate=1341458291000" alt="" /></p>
+
+<h2>3.1 Cobar解决的问题</h2>
+
+<ul>
 <li>分布式：Cobar的分布式主要是通过将表放入不同的库来实现：</li>
 </ul>
 
@@ -110,7 +181,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 </ol>
 
 
-<p>假设要分的表名是message,表结构如下所示：</p>
+<p>假设会话历史消息存储在表message中,该表胡结构如下所示：</p>
 
 <p>field Type Comment</p>
 
@@ -124,7 +195,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 
 <p>createTime datetime NOT NULL</p>
 
-<p>SQL语句脚本如下：</p>
+<p>创建该表SQL语句脚本如下：</p>
 
 <pre><code>CREATE TABLE `message` (
   `userId` bigint(20) NOT NULL,
@@ -136,7 +207,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 </code></pre>
 
-<p>将表message中的数据分布到3个数据库中。</p>
+<p>将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。</p>
 
 <ol>
 <li></li>
