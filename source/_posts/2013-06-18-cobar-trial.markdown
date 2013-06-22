@@ -32,6 +32,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 - 使用JDBC时，BLOB, BINARY, VARBINARY字段不能使用setBlob()或setBinaryStream()方法设置参数。
 # 3.功能概述 #
 Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。
+
 ![](http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&modificationDate=1341458291000)
 ## 3.1 Cobar解决的问题 ##
 - 分布式：Cobar的分布式主要是通过将表放入不同的库来实现：
@@ -77,7 +78,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 
 2. 实现策略.
 
-假设要分的表名是message,表结构如下所示：
+假设会话历史消息存储在表message中,该表胡结构如下所示：
 
 field Type Comment
 
@@ -91,7 +92,7 @@ msg varchar(500) NOT NULL
 
 createTime datetime NOT NULL
 
-SQL语句脚本如下：
+创建该表SQL语句脚本如下：
 
     CREATE TABLE `message` (
       `userId` bigint(20) NOT NULL,
@@ -103,7 +104,15 @@ SQL语句脚本如下：
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
 
+将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。
 
-将表message中的数据分布到3个数据库中。
+    insert into message values('1', 'yangwubing', 'pandan', '第1条消息', '2013-06-22 17:12:34');    
+    insert into message values('2', 'yangwubing', 'pandan', '第2条消息', '2013-06-22 17:12:34');
+    insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-06-22 17:12:34');
+
+
+
+
+
 
 3. 
