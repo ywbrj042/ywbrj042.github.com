@@ -4,7 +4,7 @@
   <title><![CDATA[杨武兵个人博客]]></title>
   <link href="http://ywbrj042.github.io/atom.xml" rel="self"/>
   <link href="http://ywbrj042.github.io/"/>
-  <updated>2013-06-22T16:42:52+08:00</updated>
+  <updated>2013-06-22T17:29:47+08:00</updated>
   <id>http://ywbrj042.github.io/</id>
   <author>
     <name><![CDATA[杨武兵]]></name>
@@ -208,6 +208,11 @@
 </code></pre>
 
 <p>将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。</p>
+
+<pre><code>insert into message values('1', 'yangwubing', 'pandan', '第1条消息', '2013-06-22 17:12:34');    
+insert into message values('2', 'yangwubing', 'pandan', '第2条消息', '2013-06-22 17:12:34');
+insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-06-22 17:12:34');
+</code></pre>
 
 <ol>
 <li></li>
