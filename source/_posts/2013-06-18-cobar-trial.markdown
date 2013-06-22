@@ -3,7 +3,7 @@ layout: post
 title: "cobar试用记录"
 date: 2013-06-18 21:10
 comments: true
-categories: tdal
+categories: ddal
 ---
 # 1.介绍 #
 
