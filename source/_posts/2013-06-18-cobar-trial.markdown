@@ -32,6 +32,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 - 使用JDBC时，BLOB, BINARY, VARBINARY字段不能使用setBlob()或setBinaryStream()方法设置参数。
 # 3.功能概述 #
 Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。
+
 ![](http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&modificationDate=1341458291000)
 ## 3.1 Cobar解决的问题 ##
 - 分布式：Cobar的分布式主要是通过将表放入不同的库来实现：
@@ -73,12 +74,11 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 
 1. 场景说明.
 
-在即使通讯系统中，需要存储历史会话记录，但是历史消息会话的数据量会随时间和用户增长非常快，如果活跃用户数据量较大，而且用户使用即使通讯较为频繁的话，则数据增长较快，假设即时通讯系统中活跃用户量是30万，每位用户每天产生的会话消息数量是100条记录，则改表每日增长的数据量是30万*100=3000万条数据，按照这种增长速度，则历史消息表的增长会很快超过单表数据量限制，因此必须通过分表实现将数据分布到不同的数据库中。
+在即使通讯系统中，需要存储历史会话记录，但是历史消息会话的数据量会随时间和用户增长非常快，如果活跃用户数据量较大，而且用户使用即使通讯较为频繁的话，则数据增长较快，假设即时通讯系统中活跃用户量是30万，每位用户每天产生的会话消息数量是100条记录，则改表每日增长的数据量是30万*100=3000万条数据，按照这种增长速度，则历史消息表的增长会很快超过单表数据量限制，因此必须通过分表实现将数据分布到不同的数据中。
 
 2. 实现策略.
 
-假设存储的历史消息信息，要分的数据库表名是message,该表的结构如下所示：
-
+假设会话历史消息存储在表message中,该表胡结构如下所示：
 
 field Type Comment
 
@@ -92,7 +92,7 @@ msg varchar(500) NOT NULL
 
 createTime datetime NOT NULL
 
-SQL语句脚本如下：
+创建该表SQL语句脚本如下：
 
     CREATE TABLE `message` (
       `userId` bigint(20) NOT NULL,
@@ -104,8 +104,16 @@ SQL语句脚本如下：
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 
 
+将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。
 
-将表message中的数据分布到3个数据库中，假设这3个数据明为db1,db2和db3。
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('1', 'yangwubing', 'pandan', 'message 1', '2013-06-22 17:12:34');    
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('2', 'yangwubing', 'pandan', 'message 2', '2013-06-22 17:12:34');
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('3', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('4', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+
+
+
+
 
 
 3. 

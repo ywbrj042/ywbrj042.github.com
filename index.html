@@ -9,7 +9,7 @@
   <meta name="author" content="杨武兵">
 
   
-  <meta name="description" content="前言 最近学习了github的使用，开始想折腾自己的个人博客，通过在网上查找资料，最终发现octopress比较符合我的需求，博客的风格清爽，而且还具有响应式设计效果，在移动端阅读十分方便。 安装 安装步骤参考octopress官网的文档说明，见地址：http://octopress.org/ &hellip;">
+  <meta name="description" content="解决的问题 目前已经面临或者未来可能面临的问题有以下这些： 1.数据量越来越大，超出了单表或者单库的最大限制。 2.数据访问压力越来越大，超出了数据库系统能力。 3.数据访问层运维问题。 4.数据访问层高可用方案。 5.数据访问层访问控制和管理。 暂时不解决的问题包括： &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,335 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/21/ddal-tec/">分布式数据访问层技术方案选型</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-21T15:43:00+08:00" pubdate data-updated="true">2013-06-21</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>解决的问题</h1>
+
+<p>目前已经面临或者未来可能面临的问题有以下这些：</p>
+
+<p>1.数据量越来越大，超出了单表或者单库的最大限制。</p>
+
+<p>2.数据访问压力越来越大，超出了数据库系统能力。</p>
+
+<p>3.数据访问层运维问题。</p>
+
+<p>4.数据访问层高可用方案。</p>
+
+<p>5.数据访问层访问控制和管理。</p>
+
+<p>暂时不解决的问题包括：</p>
+
+<p>对非关系型数据存储的统一访问。</p>
+
+<h1>自主开发还是扩展？</h1>
+
+<p>为了解决上述问题，有很多可选的方案。自主开发和使用现有开源方案扩展的讨论是经常会面临的，详细讨论过程就不再赘述，直接列出讨论的结果。</p>
+
+<p>结论：基于目前开源方案进行扩展和定制实现。具体原因有以下这些：</p>
+
+<p>a.我们的使用场景很简单，大多数开源解决方案都可以很好地实现，而且目前有很多可选的开源方案，直接使用开源方案可行。</p>
+
+<p>b.完全自主开发的周期更长、技术风险都非常大，这都是咱们无法承担的。</p>
+
+<p>c.选择一个源代码开放、需求最符合、代码能够扩展和定制的开源产品可行。基于该开源产品，通过</p>
+
+<p>不断深入学习使用方法，学习实现原理和源代码实现，达到可以自由扩展和定制，以改造成完全符合</p>
+
+<p>自身需求的产品。</p>
+
+<h1>技术方案选型</h1>
+
+<p>可选方案分类概述
+对于ddal来说，最核心的一个需求莫过于分库分表，而对于分库分表，已经有很多的开源产品出现了，比如cobar-client、hibernate shards、guzz、halo-dal、ibatis-sharding、cobar、mysql proxy、tddl等。每一个产品都有针对于不同层面进行封装而达到屏蔽上层对底层分库分表的具体细节的依赖，都是加载数据库访问客户端和服务端之间的一些中间层。</p>
+
+<p>总结一下上述列出的各种解决方案可以归纳为一下几大类。</p>
+
+<p>1.DAO层。该方案即通过在实现DAO层代码时候，通过硬编码的方式加入分库分表的逻辑，该层实现一般由项目组自行根据需求实现。</p>
+
+<p>2.ORM 框架层。该方案的实现是通过实现一个ORM框架，该框架自带分库分表功能，如：guzz；另外一种方式是基于开源成熟的ORM框架（比如MyBaits、HIbernate）进行扩展分库分表特性，主要的开源产品有：cobar-client、hibernate shard、shalo-dal、ibatis-sharding。</p>
+
+<p>3.JDBC API层。该方案通过封装JDBC API，实现分库分表逻辑，这个方法比较直接，而且有比较强的可控制性，目前还没有发现成熟的开源产品可用。</p>
+
+<p>4.数据访问代理层。该方案通过位于客户端和服务端中间的代理服务器实现分库分表逻辑，主要产品有mysql proxy、Cobar和amoeba等。</p>
+
+<p>5.数据库分区。该方案是数据库自行实行的分库分表特性。目前主流的关系型数据库，商业数据库Oralce、SQL server和DB2早就有非常成熟的数据库分区解决方案，而主流的开源数据库MySQL和PostGre也在5.0和8.0版本也增加了数据库表分区的特性。</p>
+
+<p>如上图所示，展示的是各种方案之间的关系，还包括了各种方案所处的层次，图中带颜色的各区块表示的是各种实现方案。</p>
+
+<p>上图中的关系是越处于下方的层次越低，上层的总是依赖下层，下层不依赖上层。各种层次的实现方案都有自己的优缺点，有自己适合的场景。</p>
+
+<h1>可选方案对比分析</h1>
+
+<p>各种可选方案都能够从不能程度上实现分库分表的核心需求，每种方案都有自己的优势和适合的应用场景，同时也有它的缺点和使用上的限制，通过对各种方案的详细各种因素的综合对比分析才能选择一个最适合一种或者多种方案的组合。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/18/cobar-trial/">Cobar试用记录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T21:10:00+08:00" pubdate data-updated="true">2013-06-18</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>1.介绍</h1>
+
+<p>Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。</p>
+
+<ul>
+<li><p>产品在阿里巴巴B2B公司已经稳定运行了3年以上。</p></li>
+<li><p>目前已经接管了3000+个MySQL数据库的schema，为应用提供数据服务。</p></li>
+<li><p>据最近统计cobar集群目前平均每天处理近50亿次的SQL执行请求。</p></li>
+</ul>
+
+
+<p>详细的产品文档见产品主页 <a href="http://code.alibabatech.com/wiki/display/cobar/Home" title="http://code.alibabatech.com/wiki/display/cobar/Home">http://code.alibabatech.com/wiki/display/cobar/Home</a></p>
+
+<h1>2.产品约束</h1>
+
+<ul>
+<li>不支持跨库情况下的join、分页、排序、子查询操作。</li>
+<li>SET语句执行会被忽略，事务和字符集设置除外。</li>
+<li>分库情况下，insert语句必须包含拆分字段列名。</li>
+<li>分库情况下，update语句不能更新拆分字段的值。</li>
+<li>不支持SAVEPOINT操作。</li>
+<li>暂时只支持MySQL数据节点。</li>
+<li>使用JDBC时，不支持rewriteBatchedStatements=true参数设置(默认为false)。</li>
+<li>使用JDBC时，不支持useServerPrepStmts=true参数设置(默认为false)。</li>
+<li>使用JDBC时，BLOB, BINARY, VARBINARY字段不能使用setBlob()或setBinaryStream()方法设置参数。
+
+<h1>3.功能概述</h1>
+
+Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。
+<img src="http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&amp;modificationDate=1341458291000" alt="" />
+
+<h2>3.1 Cobar解决的问题</h2></li>
+<li>分布式：Cobar的分布式主要是通过将表放入不同的库来实现：</li>
+</ul>
+
+
+<p>1.Cobar支持将一张表水平拆分成多份分别放入不同的库来实现表的水平拆分</p>
+
+<p>2.Cobar也支持将不同的表放入不同的库</p>
+
+<p>3.多数情况下，用户会将以上两种方式混合使用
+这里需要强调的是，Cobar不支持将一张表，例如test表拆分成test_1, test_2, test_3&hellip;..放在同一个库中，必须将拆分后的表分别放入不同的库来实现分布式。</p>
+
+<ul>
+<li>HA：
+在用户配置了MySQL心跳的情况下，Cobar可以自动向后端连接的MySQL发送心跳，判断MySQL运行状况，一旦运行出现异常，Cobar可以自动切换到备机工作。但需要强调的是：</li>
+</ul>
+
+
+<p>1.Cobar的主备切换有两种触发方式，一种是用户手动触发，一种是Cobar的心跳语句检测到异常后自动触发。那么，当心跳检测到主机异常，切换到备机，如果主机恢复了，需要用户手动切回主机工作，Cobar不会在主机恢复时自动切换回主机，除非备机的心跳也返回异常。</p>
+
+<p>2.Cobar只检查MySQL主备异常，不关心主备之间的数据同步，因此用户需要在使用Cobar之前在MySQL主备上配置双向同步，详情可以参阅MySQL参考手册。</p>
+
+<h2>3.2 Cobar逻辑层次图</h2>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/schema.jpg?version=2&amp;modificationDate=1341912304000" alt="" /></p>
+
+<ul>
+<li>dataSource：数据源，表示一个具体的数据库连接，与一个物理存在的schema一一对应。</li>
+<li>dataNode：数据节点，由主、备数据源，数据源的HA以及连接池共同组成，可以将一个</li>
+<li>dataNode理解为一个分库。</li>
+<li>table：表，包括拆分表(如tb1，tb2)和非拆分表。</li>
+<li>tableRule：路由规则，用于判断SQL语句被路由到具体哪些datanode执行。</li>
+<li>schema：cobar可以定义包含拆分表的schema(如schema1)，也可以定义无拆分表的schema(如schema2)。</li>
+<li>以上层次关系具有较强的灵活性，用户可以将表自由放置不同的datanode，也可将不同的datasource放置在同一MySQL实例上。</li>
+</ul>
+
+
+<h2>2.3 Cobar使用注意事项</h2>
+
+<ol>
+<li>请注意表的拆分方式，一张表水平拆分多份到不同的库中，而不是放入同一个库中。</li>
+<li>如果使用HA功能，请在MySQL主备之间配置双向同步</li>
+</ol>
+
+
+<h1>4.Cobar试用记录</h1>
+
+<h2>4.1 解决单表数据量过大问题</h2>
+
+<ol>
+<li>场景说明.</li>
+</ol>
+
+
+<p>在即使通讯系统中，需要存储历史会话记录，但是历史消息会话的数据量会随时间和用户增长非常快，如果活跃用户数据量较大，而且用户使用即使通讯较为频繁的话，则数据增长较快，假设即时通讯系统中活跃用户量是30万，每位用户每天产生的会话消息数量是100条记录，则改表每日增长的数据量是30万*100=3000万条数据，按照这种增长速度，则历史消息表的增长会很快超过单表数据量限制，因此必须通过分表实现将数据分布到不同的数据中。</p>
+
+<ol>
+<li>实现策略.</li>
+</ol>
+
+
+<p>假设要分的表名是message,表结构如下所示：</p>
+
+<p>field Type Comment</p>
+
+<p>userId bigint(20) NOT NULL</p>
+
+<p>from varchar(100) NOT NULL</p>
+
+<p>to varchar(100) NOT NULL</p>
+
+<p>msg varchar(500) NOT NULL</p>
+
+<p>createTime datetime NOT NULL</p>
+
+<p>SQL语句脚本如下：</p>
+
+<pre><code>CREATE TABLE `message` (
+  `userId` bigint(20) NOT NULL,
+  `from` varchar(100) NOT NULL,
+  `to` varchar(100) NOT NULL,
+  `msg` varchar(500) NOT NULL,
+  `createTime` datetime NOT NULL,
+  KEY `index_userId` (`userId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+</code></pre>
+
+<p>将表message中的数据分布到3个数据库中。</p>
+
+<ol>
+<li></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/06/18/ki4so-start/">Ki4so-发起一个史上最开源的sso项目</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-18T20:55:00+08:00" pubdate data-updated="true">2013-06-18</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>最近一直在研究单点登录，研究了比较流行的开源单点登录系统——CAS，对其做了比较深入的研究，深入学习了其原理和源代码。对其有一个比较深入的认识，我们公司也是一直在用它实现单点登录，在用的过程中觉得CAS存在以下方面不太适合我们的地方。</p>
+
+<h1>为什么要开发自己的SSO?</h1>
+
+<ol>
+<li>重量级。CAS作为一个开源的通用的SSO系统，要考虑的东西太多，要遵循的协议也太多，因此在CAS里面有很多其实你根本用不着的概念和特性，所以会导致相对比较笨重一些。</li>
+<li>有状态。CAS存在着TGT、ST等票据信息，这些信息是用户登录的状态，有了状态之后，不利于集群扩展，降低了整体系统的可伸缩性，当然它也有它的集群方案，是可以实现的。但是如果减少这些状态，将状态分散到客户端，不仅减轻了服务器的压力，而且服务器可以更方便的伸缩，更适合大型互联网应用的场景。
+因此我们打算重新开发一个自主的单点登录系统，它在设计理念上能够避免上述两点问题，下面是我们这个项目的介绍。
+
+<h1>项目介绍</h1></li>
+</ol>
+
+
+<p>  ki4so是一个简约、无状态、易扩展、易伸缩的适合于大型互联网web应用场景的单点登录系统，它功能简单，只实现了统一登录和登出，它最大的特色是将用户状态写入到cookie中，最大程度减少了单点登录服务端的状态，服务端只需要存储公共的应用密钥，将用户凭证的认证分散到各应用服务中，最大程度减轻了ki4so服务器的压力。</p>
+
+<h1>为什么要用ki4so？</h1>
+
+<p>单点登录系统有很多，开源的成熟的产品也有很多，比如耶鲁大学的cas等。</p>
+
+<ol>
+<li>无状态。系统可伸缩性好。</li>
+<li>简单轻量级。</li>
+<li>性能高。</li>
+<li><p>安全性高。</p>
+
+<h1>加入我们这个项目有什么好处？</h1></li>
+<li><p>我们的项目是最开源的。我们从有了一个想法之后，就开始彻底开源了，我们将概要设计、详细设计和所有文档都彻底开源，我们不一定是一个最好的项目，但一定是最开源的项目，我们毫无保留，将所有的思想、经验和项目成果彻底与所有人分享。</p></li>
+<li>我们的项目刚开始，你可以最大程度的学习到更多东西。我们项目目前刚刚启动，正处于项目的概要和详细设计阶段，你可以一起参与项目的策划和设计，你不仅仅是学习源代码，还可以自己编写出色的源代码，这远比仅仅学习下CAS要学到的东西多得多。</li>
+<li>sso是几乎每个公司都要用的，你可以将ki4so应用到你们公司中。ki4so做的事情很简单，就是统一登录和登出，几乎能与任何公司的、任何平台开发的、任何业务领域的web应用进行整合。你可以让ki4so更好地位你所在的公司服务。</li>
+<li>你可以为开源做贡献，你在做一件伟大的事情。你可以为ki4so写扩展、写各种语言的客户端、与更多的东西进行集成并贡献出来，为别人服务，这是一件非常伟大的事情。
+
+<h1>联系我们</h1></li>
+</ol>
+
+
+<h2>项目主页：</h2>
+
+<p> 我们的项目主页在：<a href="https://github.com/ebnew/ki4so" title="https://github.com/ebnew/ki4so">https://github.com/ebnew/ki4so</a> 这里有更详细的项目介绍。</p>
+
+<h2>项目群：</h2>
+
+<p><strong>199315835</strong> 项目的核心团队成员都在里面，你可以加入该群，一群探讨，你可以说说你的想法，提提你的意见，或者参与项目，总之非常欢迎大家一起。</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -228,19 +557,38 @@
 <aside class="sidebar">
   
     <section>
+  <h1>友情链接</h1>
+  <p><a target="new" href="http://www.hanjunxing.com/">韩军星</a></p>
+  <p><a target="new" href="http://dylanvivi.github.io">闲敲棋子</a></p>
+</section>
+<section>
   <h1>关于我</h1>
   <p>互联网架构师，技术管理者，技术文化倡导者，敏捷开发狂热者</p>
 </section>
 <section>
   <h1>分类目录</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/life/'>life (1)</a></li>
+    <li class='category'><a href='/blog/categories/ddal/'>ddal (2)</a></li>
+<li class='category'><a href='/blog/categories/ki4so/'>ki4so (1)</a></li>
+<li class='category'><a href='/blog/categories/life/'>life (1)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 
   </ul>
 </section><section>
   <h1>最近博客</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/06/21/ddal-tec/">分布式数据访问层技术方案选型</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/18/cobar-trial/">Cobar试用记录</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/06/18/ki4so-start/">Ki4so-发起一个史上最开源的sso项目</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/06/18/octopress-install/">Octopress安装总结</a>
@@ -295,8 +643,6 @@
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
 </section>
-
-
 
 
 
