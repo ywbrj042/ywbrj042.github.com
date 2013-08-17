@@ -4,7 +4,7 @@
   <title><![CDATA[杨武兵个人博客]]></title>
   <link href="http://ywbrj042.github.io/atom.xml" rel="self"/>
   <link href="http://ywbrj042.github.io/"/>
-  <updated>2013-06-21T18:26:54+08:00</updated>
+  <updated>2013-07-25T09:23:21+08:00</updated>
   <id>http://ywbrj042.github.io/</id>
   <author>
     <name><![CDATA[杨武兵]]></name>
@@ -12,6 +12,65 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[写给即将出世宝贝的话]]></title>
+    <link href="http://ywbrj042.github.io/blog/2013/07/25/write-to-my-baby/"/>
+    <updated>2013-07-25T08:59:00+08:00</updated>
+    <id>http://ywbrj042.github.io/blog/2013/07/25/write-to-my-baby</id>
+    <content type="html"><![CDATA[<p>虽然已经毕业五年多了，但是总感觉自己似乎又刚毕业不久，在浏览朋友的QQ空间的时候，发现最近这几年的结婚照和亲子照片比较多，这才意识到已经不在年轻，到了成家立业，结婚生子的而立之年，可能是心态上还没有成熟。</p>
+
+<p>至从得知老婆怀孕后，刚开始是惊喜，来得太意外了，还没有做好心理准备，经过一段时间后突然变得淡定了，非常期待我的孩子早点来到这个世界，这可能也是很多像我一样初为人父心理状态的转变过程吧！</p>
+
+<p>老婆一直叫我先给孩子取一个名字，我在想名字应该蕴含了父母对孩子的殷切希望！所以在起名字之前，我们要先想好对未来孩子有什么期望呢？对于这个问题我思索了很多，特此记录下来，也许当我的孩子某一天能看懂我写的这篇博客的时候，是数十年之后。</p>
+
+<p>对于未来的孩子，不管你是男孩还是女孩，都永远是我们的心头肉，我们永远爱着你！我不期望你要成为商界精英，富可敌国；</p>
+
+<p>我只希望你能拥有以下几点：</p>
+
+<p>健康的身体</p>
+
+<p>高尚的品格</p>
+
+<p>自由的思考</p>
+
+<p>快乐的生活</p>
+
+<p>那么我给你取的名字中应该包含以上几点意思，希望你能够努力做到这几点，如果真能做到这些，我会感到非常欣慰，因为这些是你的父亲一生追求的。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[消息中心技术设计总结]]></title>
+    <link href="http://ywbrj042.github.io/blog/2013/07/11/message-system-design-summary/"/>
+    <updated>2013-07-11T08:50:00+08:00</updated>
+    <id>http://ywbrj042.github.io/blog/2013/07/11/message-system-design-summary</id>
+    <content type="html"><![CDATA[<h1>前言</h1>
+
+<p>又有好一段时间没有写博客了，现在终于更加深刻的领悟到坚持是世界上最难的事情，人最大的敌人是自己。反省自己，克服人天生的惰性。</p>
+
+<p>消息中心的功能在很多网站是最常见的功能之一，主要在以下这几类网站上比较常见，第一类：社交类网站，比如微博、QQ空间、人人网等；第二类：开放平台型网站。比如天猫、京东等电子商务平台等。目的是通过消息的形式更加及时地提醒用户，有的是应用系统触发的事件类消息，有的是用户之间的交互类型的消息。</p>
+
+<p>对于不同特点的消息需要采取不同的技术实现方式，以达到业务需求和技术性能的最佳组合。</p>
+
+<h1>消息的获取方式</h1>
+
+<h1>消息实现方式总结</h1>
+
+<p>提醒或者消息的获取方式确定如下规则。
+a.       对于业务类的提醒通知，采用推拉结合的方式实现。进入 web 页面或者 ios 界面之后采用拉取信息的方式实现，要获取消息提醒内容、消息是否阅读等信息。该信息通过连接 http 服务器获得；若停留在页面上，对于获取及时消息提醒，通过与 XMPP 服务器建立长连接（在 web 客户端通过 http 短连接模拟长连接实现）以推送的方式获取及时消息提醒。</p>
+
+<ol type="a">
+<li><pre><code> 对于用户会话 IM 消息，直接采用推的方式实现。进入 web 页面或者 ios 界面，建立与 XMPP 服务器的长连接，由服务器直接推送及时通讯消息，用户在线状态等。 用户会话有两种情况，单人会话和多人会话。对于单人会话，消息推送的范围固定，性能问题不严重；对于多人会话，考虑到性能，应当限制多人会话的人数，因为涉及到消息的广播，人数过多会消耗较多的服务器资源，包括内存、 CPU 和网络带宽等。
+</code></pre></li>
+<li><pre><code>  对于全站通知消息，如无具体的接收人。由于人数不确定，不能采用推的方式实现，若用户量巨大则会出现资源消耗过多的问题，因此只能采用拉的方式实现。
+</code></pre></li>
+<li><pre><code> 对于公开的微博消息。情况一、用户会通过拉取消息的方式直接阅读消息内容；情况二、用户通过订阅用户或者订阅内容的方式订阅消息，对于这种订阅的消息，订阅人数不确定，也是推拉结合的方式获取消息，用户进入个人主页后，根据订阅规则，主动拉取消息内容，但是对于新的消息 提醒 ， 用户通过定期拉取新消息的方式实现。
+</code></pre></li>
+</ol>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[分布式数据访问层技术方案选型]]></title>
@@ -112,10 +171,15 @@
 
 <h1>3.功能概述</h1>
 
-Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。
-<img src="http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&amp;modificationDate=1341458291000" alt="" />
+<p>Cobar是关系型数据的分布式处理系统，它可以在分布式的环境下看上去像传统数据库一样为您提供海量数据服务。</p></li>
+</ul>
 
-<h2>3.1 Cobar解决的问题</h2></li>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/deploy.jpg?version=1&amp;modificationDate=1341458291000" alt="" /></p>
+
+<h2>3.1 Cobar解决的问题</h2>
+
+<ul>
 <li>分布式：Cobar的分布式主要是通过将表放入不同的库来实现：</li>
 </ul>
 
@@ -176,7 +240,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 </ol>
 
 
-<p>假设要分的表名是message,表结构如下所示：</p>
+<p>假设会话历史消息存储在表message中,该表胡结构如下所示：</p>
 
 <p>field Type Comment</p>
 
@@ -190,7 +254,7 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 
 <p>createTime datetime NOT NULL</p>
 
-<p>SQL语句脚本如下：</p>
+<p>创建该表SQL语句脚本如下：</p>
 
 <pre><code>CREATE TABLE `message` (
   `userId` bigint(20) NOT NULL,
@@ -202,7 +266,13 @@ Cobar是关系型数据的分布式处理系统，它可以在分布式的环境
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 </code></pre>
 
-<p>将表message中的数据分布到3个数据库中。</p>
+<p>将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。</p>
+
+<pre><code>insert into message(userId, `from`, `to`, msg, `createTime`) values('1', 'yangwubing', 'pandan', 'message 1', '2013-06-22 17:12:34');    
+insert into message(userId, `from`, `to`, msg, `createTime`) values('2', 'yangwubing', 'pandan', 'message 2', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('3', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('4', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+</code></pre>
 
 <ol>
 <li></li>
