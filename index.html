@@ -9,7 +9,7 @@
   <meta name="author" content="杨武兵">
 
   
-  <meta name="description" content="解决的问题 目前已经面临或者未来可能面临的问题有以下这些： 1.数据量越来越大，超出了单表或者单库的最大限制。 2.数据访问压力越来越大，超出了数据库系统能力。 3.数据访问层运维问题。 4.数据访问层高可用方案。 5.数据访问层访问控制和管理。 暂时不解决的问题包括： &hellip;">
+  <meta name="description" content="前言 最近打算学习一下cobar的源代码，方便以后扩展或者改造cobar以符合我们的需求，增加一些目前cobar不支持的特性，比如读写分离等特性。 以前不知道该如何下手看一个大型开源项目的源代码，经过一段时间的摸索之后，我认为要学习一个开源项目的代码，直接下手看代码会很盲目，不容易看懂。 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -66,6 +66,233 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/17/cobar-architecture/">Cobar架构设计</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-17T08:07:00+08:00" pubdate data-updated="true">2013-08-17</time>
+        
+         | <a href="/blog/2013/08/17/cobar-architecture/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>前言</h1>
+
+<p>最近打算学习一下cobar的源代码，方便以后扩展或者改造cobar以符合我们的需求，增加一些目前cobar不支持的特性，比如读写分离等特性。</p>
+
+<p>以前不知道该如何下手看一个大型开源项目的源代码，经过一段时间的摸索之后，我认为要学习一个开源项目的代码，直接下手看代码会很盲目，不容易看懂。按照以下方法也许更好。</p>
+
+<p>1.先学习开源项目的原理或者协议。了解开源项目的大概实现原理，以及它遵循的协议，比如我原来阅读过的CAS，先了解CAS的协议及原理，再去看源代码就容易看懂了；再比如我之前阅读过的openfire源码，在看之前我们先学习XMPP协议的原理，再去看源代码的时候，就更容易看懂代码。</p>
+
+<p>2.学习开源项目的架构设计。先通过官方或者别人分享的开源项目的架构设计，有助于从宏观上了解整个项目源代码的结构，这样在看源代码的时候就不容易迷失方向，也更容易读懂代码。很幸运的是cobar这个项目的文档还是相对比较完善的。本文也是在学习了cobar的架构设计之后整理出来的，大部分内容和图都是来源于cobar的文档，加上自己的一些理解。</p>
+
+<p>3.带有目的性的阅读源代码。因为一个大型开源项目的源代码都比较多，很难短时间内全部阅读完，带有目的性的去阅读更容易获得成就感，比如你的目的是解决一个技术问题，扩展一个不支持的特性等等。</p>
+
+<h1>cobar架构</h1>
+
+<h2>系统模块架构图</h2>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671891/WorkFlow.JPG?version=2&amp;modificationDate=1340102728000" alt="" /></p>
+
+<p>Front-end Communication: Cobar与前端应用的通信模块</p>
+
+<p>SQL Parser : SQL解析，提取SQL中的重要信息</p>
+
+<p>SQL Router : 决定SQL语句被分发到哪些库执行</p>
+
+<p>SQL Excutor : 执行SQL语句</p>
+
+<p>Result-Merger : 合并多个库的执行结果</p>
+
+<p>DataNode，HA Pool，JDBC : 后端数据访问</p>
+
+<p>其实让我们自己来设计一个这样的数据库代理服务器的话估计也会类似于这样设计，因为它确实需要这些功能模块组成。</p>
+
+<h3>前端通信</h3>
+
+<p>负责从客户端读入SQL语句，并将执行结果集发送给客户端，遵循MySQL协议
+<img src="http://code.alibabatech.com/wiki/download/attachments/7671891/frontend2.JPG?version=1&amp;modificationDate=1340093766000" alt="" /></p>
+
+<h3>解析、路由</h3>
+
+<p>解析SQL即提取SQL信息</p>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671891/parser-extract.jpg?version=1&amp;modificationDate=1340093766000" alt="" /></p>
+
+<p>路由并重组SQL，减少不必要的查询</p>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671891/paser-reconstruct.JPG?version=2&amp;modificationDate=1340096890000" alt="" /></p>
+
+<h3>后端数据访问</h3>
+
+<p>后端连接池，连接复用，提升效率</p>
+
+<p>在datanode内部做HA，细粒度的FailOver机制，一旦主库有异常，立即切换到备库</p>
+
+<p>用户可自由将不同datanode的主、备库放在同一数据库实例，分散MySQL实例上的压力
+<img src="http://code.alibabatech.com/wiki/download/attachments/7671891/backend.JPG?version=4&amp;modificationDate=1340103363000" alt="" /></p>
+
+<h2>系统实现</h2>
+
+<h3>各个模块数据流图</h3>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/data+flow.jpg?version=1&amp;modificationDate=1342764051000" alt="" /></p>
+
+<h3>网络通讯模块</h3>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/thread+flow.jpg?version=3&amp;modificationDate=1342754569000" alt="" /></p>
+
+<h3>路由与数据分布模块</h3>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/router.jpg?version=1&amp;modificationDate=1342754871000" alt="" /></p>
+
+<h3>结果合并与返回模块</h3>
+
+<p><img src="http://code.alibabatech.com/wiki/download/attachments/7671478/merge.JPG?version=2&amp;modificationDate=1342098245000" alt="" /></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/25/write-to-my-baby/">写给即将出世宝贝的话</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-25T08:59:00+08:00" pubdate data-updated="true">2013-07-25</time>
+        
+         | <a href="/blog/2013/07/25/write-to-my-baby/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>虽然已经毕业五年多了，但是总感觉自己似乎又刚毕业不久，在浏览朋友的QQ空间的时候，发现最近这几年的结婚照和亲子照片比较多，这才意识到已经不在年轻，到了成家立业，结婚生子的而立之年，可能是心态上还没有成熟。</p>
+
+<p>至从得知老婆怀孕后，刚开始是惊喜，来得太意外了，还没有做好心理准备，经过一段时间后突然变得淡定了，非常期待我的孩子早点来到这个世界，这可能也是很多像我一样初为人父心理状态的转变过程吧！</p>
+
+<p>老婆一直叫我先给孩子取一个名字，我在想名字应该蕴含了父母对孩子的殷切希望！所以在起名字之前，我们要先想好对未来孩子有什么期望呢？对于这个问题我思索了很多，特此记录下来，也许当我的孩子某一天能看懂我写的这篇博客的时候，是数十年之后。</p>
+
+<p>对于未来的孩子，不管你是男孩还是女孩，都永远是我们的心头肉，我们永远爱着你！我不期望你要成为商界精英，富可敌国；</p>
+
+<p>我只希望你能拥有以下几点：</p>
+
+<p>健康的身体</p>
+
+<p>高尚的品格</p>
+
+<p>自由的思考</p>
+
+<p>快乐的生活</p>
+
+<p>那么我给你取的名字中应该包含以上几点意思，希望你能够努力做到这几点，如果真能做到这些，我会感到非常欣慰，因为这些是你的父亲一生追求的。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/07/11/message-system-design-summary/">消息中心技术设计总结</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-07-11T08:50:00+08:00" pubdate data-updated="true">2013-07-11</time>
+        
+         | <a href="/blog/2013/07/11/message-system-design-summary/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>前言</h1>
+
+<p>又有好一段时间没有写博客了，现在终于更加深刻的领悟到坚持是世界上最难的事情，人最大的敌人是自己。反省自己，克服人天生的惰性。</p>
+
+<p>消息中心的功能在很多网站是最常见的功能之一，主要在以下这几类网站上比较常见，第一类：社交类网站，比如微博、QQ空间、人人网等；第二类：开放平台型网站。比如天猫、京东等电子商务平台等。目的是通过消息的形式更加及时地提醒用户，有的是应用系统触发的事件类消息，有的是用户之间的交互类型的消息。</p>
+
+<p>对于不同特点的消息需要采取不同的技术实现方式，以达到业务需求和技术性能的最佳组合。</p>
+
+<h1>消息的获取方式</h1>
+
+<h1>消息实现方式总结</h1>
+
+<p>提醒或者消息的获取方式确定如下规则。
+a.       对于业务类的提醒通知，采用推拉结合的方式实现。进入 web 页面或者 ios 界面之后采用拉取信息的方式实现，要获取消息提醒内容、消息是否阅读等信息。该信息通过连接 http 服务器获得；若停留在页面上，对于获取及时消息提醒，通过与 XMPP 服务器建立长连接（在 web 客户端通过 http 短连接模拟长连接实现）以推送的方式获取及时消息提醒。</p>
+
+<ol type="a">
+<li><pre><code> 对于用户会话 IM 消息，直接采用推的方式实现。进入 web 页面或者 ios 界面，建立与 XMPP 服务器的长连接，由服务器直接推送及时通讯消息，用户在线状态等。 用户会话有两种情况，单人会话和多人会话。对于单人会话，消息推送的范围固定，性能问题不严重；对于多人会话，考虑到性能，应当限制多人会话的人数，因为涉及到消息的广播，人数过多会消耗较多的服务器资源，包括内存、 CPU 和网络带宽等。
+</code></pre></li>
+<li><pre><code>  对于全站通知消息，如无具体的接收人。由于人数不确定，不能采用推的方式实现，若用户量巨大则会出现资源消耗过多的问题，因此只能采用拉的方式实现。
+</code></pre></li>
+<li><pre><code> 对于公开的微博消息。情况一、用户会通过拉取消息的方式直接阅读消息内容；情况二、用户通过订阅用户或者订阅内容的方式订阅消息，对于这种订阅的消息，订阅人数不确定，也是推拉结合的方式获取消息，用户进入个人主页后，根据订阅规则，主动拉取消息内容，但是对于新的消息 提醒 ， 用户通过定期拉取新消息的方式实现。
+</code></pre></li>
+</ol>
+
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -317,9 +544,10 @@
 
 <p>将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。</p>
 
-<pre><code>insert into message values('1', 'yangwubing', 'pandan', '第1条消息', '2013-06-22 17:12:34');    
-insert into message values('2', 'yangwubing', 'pandan', '第2条消息', '2013-06-22 17:12:34');
-insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-06-22 17:12:34');
+<pre><code>insert into message(userId, `from`, `to`, msg, `createTime`) values('1', 'yangwubing', 'pandan', 'message 1', '2013-06-22 17:12:34');    
+insert into message(userId, `from`, `to`, msg, `createTime`) values('2', 'yangwubing', 'pandan', 'message 2', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('3', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('4', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
 </code></pre>
 
 <ol>
@@ -585,23 +813,23 @@ insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-0
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/17/cobar-architecture/">Cobar架构设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/25/write-to-my-baby/">写给即将出世宝贝的话</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/11/message-system-design-summary/">消息中心技术设计总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/21/ddal-tec/">分布式数据访问层技术方案选型</a>
       </li>
     
       <li class="post">
         <a href="/blog/2013/06/18/cobar-trial/">Cobar试用记录</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/18/ki4so-start/">Ki4so-发起一个史上最开源的sso项目</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/18/octopress-install/">Octopress安装总结</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/16/monixueche/">模拟练车总结</a>
       </li>
     
   </ul>
@@ -614,9 +842,9 @@ insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-0
 </section><section>
   <h1>分类目录</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/ddal/'>ddal (2)</a></li>
+    <li class='category'><a href='/blog/categories/ddal/'>ddal (3)</a></li>
 <li class='category'><a href='/blog/categories/ki4so/'>ki4so (1)</a></li>
-<li class='category'><a href='/blog/categories/life/'>life (1)</a></li>
+<li class='category'><a href='/blog/categories/life/'>life (2)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 
   </ul>

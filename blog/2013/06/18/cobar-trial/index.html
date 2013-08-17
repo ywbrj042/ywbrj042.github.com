@@ -220,9 +220,10 @@
 
 <p>将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。</p>
 
-<pre><code>insert into message values('1', 'yangwubing', 'pandan', '第1条消息', '2013-06-22 17:12:34');    
-insert into message values('2', 'yangwubing', 'pandan', '第2条消息', '2013-06-22 17:12:34');
-insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-06-22 17:12:34');
+<pre><code>insert into message(userId, `from`, `to`, msg, `createTime`) values('1', 'yangwubing', 'pandan', 'message 1', '2013-06-22 17:12:34');    
+insert into message(userId, `from`, `to`, msg, `createTime`) values('2', 'yangwubing', 'pandan', 'message 2', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('3', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+insert into message(userId, `from`, `to`, msg, `createTime`) values('4', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
 </code></pre>
 
 <ol>
@@ -302,23 +303,23 @@ insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-0
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/17/cobar-architecture/">Cobar架构设计</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/25/write-to-my-baby/">写给即将出世宝贝的话</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/11/message-system-design-summary/">消息中心技术设计总结</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/06/21/ddal-tec/">分布式数据访问层技术方案选型</a>
       </li>
     
       <li class="post">
         <a href="/blog/2013/06/18/cobar-trial/">Cobar试用记录</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/18/ki4so-start/">Ki4so-发起一个史上最开源的sso项目</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/18/octopress-install/">Octopress安装总结</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/16/monixueche/">模拟练车总结</a>
       </li>
     
   </ul>
@@ -331,9 +332,9 @@ insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-0
 </section><section>
   <h1>分类目录</h1>
   <ul id="categories">
-    <li class='category'><a href='/blog/categories/ddal/'>ddal (2)</a></li>
+    <li class='category'><a href='/blog/categories/ddal/'>ddal (3)</a></li>
 <li class='category'><a href='/blog/categories/ki4so/'>ki4so (1)</a></li>
-<li class='category'><a href='/blog/categories/life/'>life (1)</a></li>
+<li class='category'><a href='/blog/categories/life/'>life (2)</a></li>
 <li class='category'><a href='/blog/categories/octopress/'>octopress (1)</a></li>
 
   </ul>
