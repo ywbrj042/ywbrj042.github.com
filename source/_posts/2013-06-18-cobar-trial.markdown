@@ -106,9 +106,10 @@ createTime datetime NOT NULL
 
 将表message中的数据分布到3个数据库中，这个三个数据库名称分别是：dbtest1，dbtest2和dbtest3。
 
-    insert into message values('1', 'yangwubing', 'pandan', '第1条消息', '2013-06-22 17:12:34');    
-    insert into message values('2', 'yangwubing', 'pandan', '第2条消息', '2013-06-22 17:12:34');
-    insert into message values('1', 'yangwubing', 'pandan', '第3条消息', '2013-06-22 17:12:34');
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('1', 'yangwubing', 'pandan', 'message 1', '2013-06-22 17:12:34');    
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('2', 'yangwubing', 'pandan', 'message 2', '2013-06-22 17:12:34');
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('3', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
+    insert into message(userId, `from`, `to`, msg, `createTime`) values('4', 'yangwubing', 'pandan', 'message 3', '2013-06-22 17:12:34');
 
 
 
